@@ -16,26 +16,14 @@ namespace Server
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            var webSocketOptions = new WebSocketOptions()
-            {
-                KeepAliveInterval = TimeSpan.FromSeconds(120),
-                ReceiveBufferSize = 4 * 1024
-            };
-            app.UseWebSockets(webSocketOptions);
+            app.UseWebSockets();
 
             app.Use(async (context, next) =>
             {
-                if (context.Request.Path == "/ws")
+                if (context.WebSockets.IsWebSocketRequest)
                 {
-                    if (context.WebSockets.IsWebSocketRequest)
-                    {
-                        var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                        await Echo(webSocket);
-                    }
-                    else
-                    {
-                        context.Response.StatusCode = 400;
-                    }
+                    var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+                    await Echo(webSocket);
                 }
                 else
                 {
