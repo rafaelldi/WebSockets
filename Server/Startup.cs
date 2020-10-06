@@ -4,31 +4,27 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Server
 {
     public class Startup
     {
-        public void ConfigureServices(IServiceCollection services)
-        {
-        }
-
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseWebSockets();
+            
+            app.UseRouting();
 
-            app.Use(async (context, next) =>
+            app.UseEndpoints(endpoints =>
             {
-                if (context.WebSockets.IsWebSocketRequest)
+                endpoints.MapGet("/", async context =>
                 {
-                    var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                    await Echo(webSocket);
-                }
-                else
-                {
-                    await next();
-                }
+                    if (context.WebSockets.IsWebSocketRequest)
+                    {
+                        var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+                        await Echo(webSocket);
+                    }
+                });
             });
         }
         

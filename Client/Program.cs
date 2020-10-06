@@ -13,7 +13,9 @@ namespace Client
 
             client.Start();
 
-            client.Send("Hello world!");
+            Console.WriteLine("Type a message:");
+            var message = Console.ReadLine();
+            client.Send(message);
 
             Console.ReadKey();
 
